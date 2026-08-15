@@ -4,7 +4,7 @@
 >
 > Last updated: 2026-08-15
 >
-> Status: architecture selected; implementation has not started.
+> Status: Phase 0 complete; frontend migration has not started.
 
 ## 1. Project objective
 
@@ -75,7 +75,16 @@ The account `andreoulegal` currently has three public repositories:
 
 ### Current conclusion
 
-The current GitHub repositories and current Papaki-hosted website are disconnected. No infrastructure changes have been made yet.
+The current GitHub repositories and current Papaki-hosted website are disconnected. A new production repository has now been created, but no production infrastructure changes have been made.
+
+### New production repository
+
+- Repository: [`andreoulegal/andreasandreou-site`](https://github.com/andreoulegal/andreasandreou-site)
+- Working branch: `foundation/capture-live-site`
+- Initial commit: `1d5d553`
+- Visibility: public
+- Current branch contents: project instructions, blueprint, README and a captured snapshot under `legacy-live/`
+- The default `main` branch has not been changed.
 
 ## 3. Target architecture
 
@@ -318,14 +327,14 @@ Before the first migration:
 
 ### Phase 0 — Discovery and backup
 
-- [ ] Download/archive current live files.
-- [ ] Record DNS, email and domain configuration.
-- [ ] Preserve legacy GitHub repositories.
+- [x] Download/archive current live files under `legacy-live/`.
+- [x] Record the publicly observable DNS and domain configuration.
+- [x] Preserve legacy GitHub repositories.
 - [ ] Confirm Papaki account/hosting ownership.
 
 ### Phase 1 — Production repository and frontend
 
-- [ ] Create the new production repository.
+- [x] Create the new production repository.
 - [ ] Migrate the current public design.
 - [ ] Add Astro structure and shared components.
 - [ ] Reproduce current pages.

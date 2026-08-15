@@ -4,7 +4,7 @@
 >
 > Last updated: 2026-08-15
 >
-> Status: Phase 1 complete; public frontend migration is ready for preview deployment.
+> Status: Phase 2 complete for isolated Netlify deployment; custom domain and production DNS are unchanged.
 
 ## 1. Project objective
 
@@ -75,17 +75,24 @@ The account `andreoulegal` currently has three public repositories:
 
 ### Current conclusion
 
-The current GitHub repositories and current Papaki-hosted website are disconnected. A new production repository has now been created, but no production infrastructure changes have been made.
+The current GitHub repositories and current Papaki-hosted website were disconnected. The new repository is now connected to an isolated Netlify project for deployment verification. The live custom domain still remains on Papaki; no DNS cutover has been made.
 
 ### New production repository
 
 - Repository: [`andreoulegal/andreasandreou-site`](https://github.com/andreoulegal/andreasandreou-site)
 - Default branch: `main`
-- Working branch: `foundation/capture-live-site`
-- Initial commit: `1d5d553`
+- Working branch: `phase1/astro-migration`
+- Frontend migration commit: `5bf3189`
 - Visibility: public
-- Current branch contents: project instructions, blueprint, README and a captured snapshot under `legacy-live/`
-- No Netlify connection, DNS change or production deployment exists yet.
+- Current branch contents: Astro frontend, project instructions, blueprint, README and a captured snapshot under `legacy-live/`
+- Netlify project: `andreasandreou-site` (`344d8e7d-2025-4aef-a587-a142e4310dc5`)
+- Netlify URL: `https://andreasandreou-site.netlify.app`
+- Netlify repository connection: GitHub `andreoulegal/andreasandreou-site`
+- Netlify deploy branch: `phase1/astro-migration`
+- Netlify build command: `pnpm run build`
+- Netlify publish directory: `dist`
+- Latest isolated Netlify deployment: published successfully from commit `5bf3189`
+- The custom domain, Papaki hosting and DNS remain unchanged.
 
 ## 3. Target architecture
 
@@ -353,10 +360,10 @@ The Netlify adapter does not support Astro's local `preview` command. Local veri
 
 ### Phase 2 — Netlify deployment
 
-- [ ] Connect repository to Netlify.
-- [ ] Configure build command and output/runtime settings.
-- [ ] Verify preview deployment.
-- [ ] Verify production deployment on temporary Netlify URL.
+- [x] Connect repository to Netlify.
+- [x] Configure build command and output/runtime settings.
+- [x] Verify the deployed site on the temporary Netlify URL.
+- [ ] Change the custom domain or production DNS.
 
 ### Phase 3 — Supabase foundation
 

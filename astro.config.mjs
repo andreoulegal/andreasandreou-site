@@ -4,5 +4,6 @@ import netlify from '@astrojs/netlify';
 export default defineConfig({
   output: 'server',
   adapter: netlify(),
-  site: 'https://andreasandreou.gr'
+  site: 'https://andreasandreou.gr',
+  trailingSlash: 'never'
 });

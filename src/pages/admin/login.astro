@@ -1,0 +1,50 @@
+---
+const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'https://andreasandreou.gr';
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin sign in — Andreas Andreou</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin.css" />
+  </head>
+  <body>
+    <main class="admin-shell">
+      <section class="admin-card">
+        <p class="eyebrow">Private workspace</p>
+        <h1>Articles dashboard</h1>
+        <p>Sign in with your administrator email to manage articles.</p>
+        <form id="login-form">
+          <label for="email">Email</label>
+          <input id="email" type="email" value="andreoulegal@gmail.com" required />
+          <button class="button" type="submit">Send sign-in link</button>
+          <p id="login-message" class="form-message" role="status"></p>
+        </form>
+      </section>
+    </main>
+
+    <script type="application/json" id="admin-config" set:html={JSON.stringify({ siteUrl, supabaseUrl, anonKey })}></script>
+    <script type="module" is:inline>
+      const { siteUrl, supabaseUrl, anonKey } = JSON.parse(document.querySelector('#admin-config').textContent);
+      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+      const supabase = createClient(supabaseUrl, anonKey, { auth: { persistSession: true, autoRefreshToken: true } });
+      const form = document.querySelector('#login-form');
+      const message = document.querySelector('#login-message');
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        message.textContent = 'Sending…';
+        const { error } = await supabase.auth.signInWithOtp({
+          email: document.querySelector('#email').value,
+          options: { emailRedirectTo: `${siteUrl}/auth/callback` }
+        });
+        message.textContent = error ? error.message : 'Check your email for the sign-in link.';
+      });
+    </script>
+  </body>
+</html>

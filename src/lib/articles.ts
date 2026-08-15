@@ -18,8 +18,7 @@ export async function getPublishedArticles(): Promise<Article[]> {
     .from('articles')
     .select('id,title,slug,excerpt,body,cover_image_path,category,tags,status,published_at')
     .eq('status', 'published')
-    .not('published_at', 'is', null)
-    .lte('published_at', new Date().toISOString())
+    .or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`)
     .order('published_at', { ascending: false });
   if (error) throw error;
   return (data ?? []) as Article[];
@@ -31,8 +30,7 @@ export async function getPublishedArticle(slug: string): Promise<Article | null>
     .select('id,title,slug,excerpt,body,cover_image_path,category,tags,status,published_at')
     .eq('slug', slug)
     .eq('status', 'published')
-    .not('published_at', 'is', null)
-    .lte('published_at', new Date().toISOString())
+    .or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`)
     .maybeSingle();
   if (error) throw error;
   return (data as Article | null) ?? null;

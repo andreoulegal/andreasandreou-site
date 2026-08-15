@@ -2,9 +2,9 @@
 
 > Living technical reference for the website, public content platform and admin dashboard.
 >
-> Last updated: 2026-08-15
+> Last updated: 2026-08-16
 >
-> Status: Netlify production deploy is ready on `main`; custom domain is attached in Netlify, pending DNS delegation from Papaki.
+> Status: Netlify is serving the production site and the custom domain. GitHub `main` is the production source. Admin hardening, SEO routes and blueprint alignment are implemented locally and await commit/deploy verification.
 
 ## 1. Project objective
 
@@ -34,25 +34,15 @@ andreasandreou.gr serves the public website
 
 ### Live infrastructure
 
-The current public domain is served from a Papaki-associated server:
+The current public domain is served by Netlify:
 
-- `andreasandreou.gr` A record: `213.158.90.220`
-- reverse DNS: `linux250.papaki.gr`
-- HTTP server: Nginx
-- TLS certificate: Let's Encrypt
-- DNS nameservers: `dns1.papaki.gr`, `dns2.papaki.gr`
-- `www.andreasandreou.gr` is a CNAME to `andreasandreou.gr`
+- `andreasandreou.gr` returns HTTP 200 with `server: Netlify`;
+- `www.andreasandreou.gr` redirects to the apex domain;
+- DNS is delegated to Netlify DNS nameservers `dns1.p07.nsone.net` through `dns4.p07.nsone.net`;
+- Netlify is the production host, build service and CDN;
+- Papaki remains the registrar/account provider and may continue to host email services, but it is not serving the website.
 
-The current live artifact is a static website containing files similar to:
-
-```text
-index.html
-bio.html
-work.html
-public-contribution.html
-styles.css
-assets/
-```
+The live artifact is the Astro SSR application built from this repository. It is not the old static Papaki artifact.
 
 ### Existing GitHub repositories
 
@@ -75,24 +65,24 @@ The account `andreoulegal` currently has three public repositories:
 
 ### Current conclusion
 
-The current GitHub repositories and current Papaki-hosted website were disconnected. The new repository is now connected to an isolated Netlify project for deployment verification. The live custom domain still remains on Papaki; no DNS cutover has been made.
+The production path is now connected: GitHub repository `andreoulegal/andreasandreou-site`, branch `main`, builds on Netlify and serves `andreasandreou.gr`. The old GitHub Pages repository and the two starter repositories are legacy/non-production.
 
 ### New production repository
 
 - Repository: [`andreoulegal/andreasandreou-site`](https://github.com/andreoulegal/andreasandreou-site)
 - Default branch: `main`
-- Working branch: `phase1/astro-migration`
-- Frontend migration commit: `5bf3189`
+- Working branch: `main`
+- Frontend migration commit: `5bf3189` (historical migration baseline)
 - Visibility: public
 - Current branch contents: Astro frontend, project instructions, blueprint, README and a captured snapshot under `legacy-live/`
 - Netlify project: `andreasandreou-site` (`344d8e7d-2025-4aef-a587-a142e4310dc5`)
 - Netlify URL: `https://andreasandreou-site.netlify.app`
 - Netlify repository connection: GitHub `andreoulegal/andreasandreou-site`
-- Netlify deploy branch: `phase1/astro-migration`
+- Netlify deploy branch: `main`
 - Netlify build command: `pnpm run build`
 - Netlify publish directory: `dist`
-- Latest isolated Netlify deployment: published successfully from commit `5bf3189`
-- The custom domain, Papaki hosting and DNS remain unchanged.
+- Latest production deployment was published successfully from `main`; current source changes are pending the next deploy.
+- The custom domain is attached to Netlify and DNS is already delegated to Netlify.
 
 ### Supabase foundation
 
@@ -104,12 +94,11 @@ The current GitHub repositories and current Papaki-hosted website were disconnec
 - Security: Row Level Security enabled with public published-article reads and author-owned writes
 - Storage: public `article-media` bucket, 5 MB image limit, authenticated uploads scoped to the user's folder
 - Local migration: `supabase/migrations/20260815170014_articles_foundation.sql`
-- Auth site URL: `https://andreasandreou-site.netlify.app`
+- Auth site URL: `https://andreasandreou.gr`
 - Initial admin invitation sent to `andreoulegal@gmail.com`; accepted successfully on 2026-08-15.
-- Production branch: `main`; latest successful Netlify production deploy is commit `78cc683`.
-- Custom domain `andreasandreou.gr` is attached as the Netlify primary domain, with `www` redirect configured. DNS still resolves through Papaki and must be updated before HTTPS can be provisioned.
-- Required external DNS records if keeping Papaki DNS: apex A `@` → `75.2.60.5`; `www` CNAME → `andreasandreou-site.netlify.app`.
-- Alternative: delegate the domain at Papaki to Netlify DNS nameservers `dns1.p07.nsone.net`, `dns2.p07.nsone.net`, `dns3.p07.nsone.net`, `dns4.p07.nsone.net`.
+- Production branch: `main`; Netlify production deploys automatically after a successful build.
+- Custom domain `andreasandreou.gr` is the Netlify primary domain, with `www` redirect configured and HTTPS active.
+- DNS is delegated to Netlify nameservers; no Papaki website A/CNAME records are used in the current path.
 - Netlify production context has the public Supabase URL and publishable key configured; private keys are not stored in GitHub.
 
 ## 3. Target architecture
@@ -329,6 +318,8 @@ Minimum requirements before production:
 - server-side route protection for `/admin`;
 - Supabase RLS enabled and tested;
 - no public write access to articles;
+- `/admin` is protected server-side by Astro middleware and Supabase `getClaims()`;
+- the auth callback exchanges the authorization code server-side and stores the session cookie;
 - sanitized rich-text rendering;
 - file upload type and size validation;
 - secure HTTP-only session handling where applicable;
@@ -370,11 +361,11 @@ Before the first migration:
 - [x] Reproduce current pages and routes: `/`, `/bio`, `/work`, `/public-contribution`.
 - [x] Run `astro check`, production build and local route checks.
 
-Current implementation branch: `phase1/astro-migration`.
+Current implementation branch: `main`.
 
 Current verification:
 
-- `astro check`: 0 errors, 0 warnings, 0 hints;
+- `astro check`: 0 errors; remaining hints are the browser's deprecated `document.execCommand` API and explicit inline JSON configuration scripts;
 - `astro build`: successful with the Netlify adapter;
 - local checks: all four public routes plus `/styles.css` and favicon returned `200`.
 
@@ -385,7 +376,8 @@ The Netlify adapter does not support Astro's local `preview` command. Local veri
 - [x] Connect repository to Netlify.
 - [x] Configure build command and output/runtime settings.
 - [x] Verify the deployed site on the temporary Netlify URL.
-- [ ] Change the custom domain or production DNS.
+- [x] Attach the custom domain and configure the `www` redirect.
+- [x] Delegate DNS to Netlify and verify apex, `www` and HTTPS.
 
 ### Phase 3 — Supabase foundation
 
@@ -400,30 +392,31 @@ The Netlify adapter does not support Astro's local `preview` command. Local veri
 
 ### Phase 4 — Dashboard
 
-- [ ] Add `/admin` route.
-- [ ] Add authentication flow.
-- [ ] Add article list and editor.
-- [ ] Add drafts and publishing.
-- [ ] Add image uploads.
+- [x] Add `/admin` route.
+- [x] Add public `/admin/login` magic-link entry point.
+- [x] Add server-side authentication flow and protected `/admin` middleware.
+- [x] Add article list and editor.
+- [x] Add drafts and publishing.
+- [x] Add image uploads.
 - [ ] Add preview functionality.
 
 ### Phase 5 — Public articles
 
-- [ ] Add `/articles` index.
-- [ ] Add `/articles/[slug]` pages.
-- [ ] Add SEO metadata.
-- [ ] Add Open Graph metadata.
-- [ ] Add sitemap and robots.txt.
-- [ ] Confirm published/draft visibility rules.
+- [x] Add `/articles` index.
+- [x] Add `/articles/[slug]` pages.
+- [x] Add SEO metadata.
+- [x] Add Open Graph metadata.
+- [x] Add dynamic sitemap and `robots.txt`.
+- [x] Enforce published/draft visibility rules in the public query.
 
 ### Phase 6 — Domain cutover
 
-- [ ] Verify full site on temporary URL.
-- [ ] Preserve email DNS records.
-- [ ] Point website DNS to Netlify.
-- [ ] Verify apex and `www`.
-- [ ] Verify HTTPS and redirects.
-- [ ] Monitor for errors.
+- [x] Verify full site on temporary URL.
+- [x] Preserve email DNS records.
+- [x] Point website DNS to Netlify.
+- [x] Verify apex and `www`.
+- [x] Verify HTTPS and redirects.
+- [ ] Monitor the next production deploy for errors.
 
 ### Phase 7 — Stabilization
 
@@ -431,7 +424,7 @@ The Netlify adapter does not support Astro's local `preview` command. Local veri
 - [ ] Add analytics if required.
 - [ ] Add error monitoring.
 - [ ] Test rollback.
-- [ ] Document routine publishing workflow.
+- [x] Document routine publishing workflow.
 - [ ] Mark old hosting/repositories as legacy only after verification.
 
 ## 12. Definition of done

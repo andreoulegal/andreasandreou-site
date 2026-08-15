@@ -4,7 +4,7 @@
 >
 > Last updated: 2026-08-15
 >
-> Status: Phase 3 foundation in progress; Supabase database/storage and invitation acceptance are complete, while the first dashboard implementation is being built.
+> Status: Netlify production deploy is ready on `main`; custom domain is attached in Netlify, pending DNS delegation from Papaki.
 
 ## 1. Project objective
 
@@ -106,6 +106,10 @@ The current GitHub repositories and current Papaki-hosted website were disconnec
 - Local migration: `supabase/migrations/20260815170014_articles_foundation.sql`
 - Auth site URL: `https://andreasandreou-site.netlify.app`
 - Initial admin invitation sent to `andreoulegal@gmail.com`; accepted successfully on 2026-08-15.
+- Production branch: `main`; latest successful Netlify production deploy is commit `78cc683`.
+- Custom domain `andreasandreou.gr` is attached as the Netlify primary domain, with `www` redirect configured. DNS still resolves through Papaki and must be updated before HTTPS can be provisioned.
+- Required external DNS records if keeping Papaki DNS: apex A `@` → `75.2.60.5`; `www` CNAME → `andreasandreou-site.netlify.app`.
+- Alternative: delegate the domain at Papaki to Netlify DNS nameservers `dns1.p07.nsone.net`, `dns2.p07.nsone.net`, `dns3.p07.nsone.net`, `dns4.p07.nsone.net`.
 - Netlify production context has the public Supabase URL and publishable key configured; private keys are not stored in GitHub.
 
 ## 3. Target architecture

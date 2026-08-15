@@ -4,7 +4,7 @@
 >
 > Last updated: 2026-08-16
 >
-> Status: Netlify is serving the production site and the custom domain. GitHub `main` is the production source. Admin hardening, SEO routes and blueprint alignment are implemented locally and await commit/deploy verification.
+> Status: Netlify is serving the production site and the custom domain. GitHub `main` is the production source. Admin hardening, SEO routes and the blueprint are deployed and live from commit `8cf12a3`.
 
 ## 1. Project objective
 
@@ -81,7 +81,7 @@ The production path is now connected: GitHub repository `andreoulegal/andreasand
 - Netlify deploy branch: `main`
 - Netlify build command: `pnpm run build`
 - Netlify publish directory: `dist`
-- Latest production deployment was published successfully from `main`; current source changes are pending the next deploy.
+- Latest production deployment was published successfully from `main` at commit `8cf12a3`.
 - The custom domain is attached to Netlify and DNS is already delegated to Netlify.
 
 ### Supabase foundation
@@ -454,6 +454,8 @@ The project is considered complete only when:
 | 2026-08-15 | Use Supabase for Auth, database and storage | Avoids building and maintaining a custom server/database |
 | 2026-08-15 | Keep Papaki for domain/email Minitially | Reduces migration risk and preserves existing email services |
 | 2026-08-15 | Store articles in database, not Markdown files | Enables dashboard publishing without code edits |
+| 2026-08-16 | Protect `/admin` in Astro middleware and exchange auth codes server-side | Prevents unauthenticated dashboard access and makes the Supabase magic-link flow work with secure server cookies |
+| 2026-08-16 | Add dynamic sitemap, robots policy and production site URL environment variable | Makes article discovery explicit and keeps auth redirects on the custom domain |
 
 ## 14. Change-control rule
 

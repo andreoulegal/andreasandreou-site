@@ -104,6 +104,8 @@ The current GitHub repositories and current Papaki-hosted website were disconnec
 - Security: Row Level Security enabled with public published-article reads and author-owned writes
 - Storage: public `article-media` bucket, 5 MB image limit, authenticated uploads scoped to the user's folder
 - Local migration: `supabase/migrations/20260815170014_articles_foundation.sql`
+- Auth site URL: `https://andreasandreou-site.netlify.app`
+- Initial admin invitation sent to `andreoulegal@gmail.com`; acceptance is still required before dashboard login.
 - Netlify production context has the public Supabase URL and publishable key configured; private keys are not stored in GitHub.
 
 ## 3. Target architecture
@@ -382,7 +384,8 @@ The Netlify adapter does not support Astro's local `preview` command. Local veri
 - [x] Create Supabase project.
 - [x] Add the first migration.
 - [x] Create `articles` schema.
-- [ ] Configure Auth redirect URLs and first admin account.
+- [x] Configure the initial Auth site URL and send the first admin invitation.
+- [ ] Confirm invitation acceptance and add local-development redirect URL.
 - [x] Configure Storage bucket for article media.
 - [x] Write and verify RLS policies.
 

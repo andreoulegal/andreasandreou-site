@@ -170,7 +170,7 @@ Initial dashboard route:
 
 - Netlify preview: `https://andreasandreou-site.netlify.app/admin`
 - The first implementation supports email magic-link login, listing the signed-in author's articles and creating draft/published records.
-- The first implementation is intentionally a foundation: rich-text editing, media upload UI, editing existing articles and server-side SSR session middleware remain follow-up work.
+- The first implementation supports creating, editing and deleting an author's articles, draft/published/archived status and cover-image upload to the `article-media` bucket. Rich-text editing and server-side SSR session middleware remain follow-up work.
 
 ```text
 /admin

@@ -390,7 +390,7 @@ The Netlify adapter does not support Astro's local `preview` command. Local veri
 - [x] Create `articles` schema.
 - [x] Configure the initial Auth site URL and send the first admin invitation.
 - [x] Confirm invitation acceptance; add local-development redirect URL before local auth testing.
-- [ ] Finish and test the first `/admin` dashboard flow on the Netlify preview.
+- [x] Finish and test the first `/admin` dashboard flow on the Netlify preview.
 - [x] Configure Storage bucket for article media.
 - [x] Write and verify RLS policies.
 

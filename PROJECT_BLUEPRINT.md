@@ -4,7 +4,7 @@
 >
 > Last updated: 2026-08-15
 >
-> Status: Phase 3 foundation in progress; Supabase database and storage are configured, while Auth and the dashboard remain next.
+> Status: Phase 3 foundation in progress; Supabase database/storage and invitation acceptance are complete, while the first dashboard implementation is being built.
 
 ## 1. Project objective
 
@@ -105,7 +105,7 @@ The current GitHub repositories and current Papaki-hosted website were disconnec
 - Storage: public `article-media` bucket, 5 MB image limit, authenticated uploads scoped to the user's folder
 - Local migration: `supabase/migrations/20260815170014_articles_foundation.sql`
 - Auth site URL: `https://andreasandreou-site.netlify.app`
-- Initial admin invitation sent to `andreoulegal@gmail.com`; acceptance is still required before dashboard login.
+- Initial admin invitation sent to `andreoulegal@gmail.com`; accepted successfully on 2026-08-15.
 - Netlify production context has the public Supabase URL and publishable key configured; private keys are not stored in GitHub.
 
 ## 3. Target architecture
@@ -167,6 +167,10 @@ Article pages should be server-rendered or otherwise generated in an SEO-friendl
 ### Admin dashboard
 
 Initial dashboard route:
+
+- Netlify preview: `https://andreasandreou-site.netlify.app/admin`
+- The first implementation supports email magic-link login, listing the signed-in author's articles and creating draft/published records.
+- The first implementation is intentionally a foundation: rich-text editing, media upload UI, editing existing articles and server-side SSR session middleware remain follow-up work.
 
 ```text
 /admin
@@ -385,7 +389,8 @@ The Netlify adapter does not support Astro's local `preview` command. Local veri
 - [x] Add the first migration.
 - [x] Create `articles` schema.
 - [x] Configure the initial Auth site URL and send the first admin invitation.
-- [ ] Confirm invitation acceptance and add local-development redirect URL.
+- [x] Confirm invitation acceptance; add local-development redirect URL before local auth testing.
+- [ ] Finish and test the first `/admin` dashboard flow on the Netlify preview.
 - [x] Configure Storage bucket for article media.
 - [x] Write and verify RLS policies.
 

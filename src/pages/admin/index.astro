@@ -1,0 +1,35 @@
+---
+const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'https://andreasandreou-site.netlify.app';
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+---
+
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Articles dashboard — Andreas Andreou</title><link rel="stylesheet" href="/styles.css" /><link rel="stylesheet" href="/admin.css" /></head>
+  <body>
+    <main class="admin-shell">
+      <section id="login-panel" class="admin-card">
+        <p class="eyebrow">Private workspace</p><h1>Articles dashboard</h1><p>Sign in with your administrator email to manage articles.</p>
+        <form id="login-form"><label for="email">Email</label><input id="email" type="email" value="andreoulegal@gmail.com" required /><button class="button" type="submit">Send sign-in link</button><p id="login-message" class="form-message" role="status"></p></form>
+      </section>
+      <section id="dashboard-panel" class="admin-card" hidden>
+        <div class="admin-heading"><div><p class="eyebrow">Private workspace</p><h1>Articles</h1></div><button id="sign-out" class="text-link" type="button">Sign out</button></div>
+        <p id="user-email" class="muted"></p>
+        <form id="article-form" class="article-form"><label for="title">Title</label><input id="title" required /><label for="slug">Slug</label><input id="slug" required pattern="[a-z0-9-]+" placeholder="my-article" /><label for="excerpt">Excerpt</label><textarea id="excerpt" rows="3"></textarea><label for="body">Body (JSON for now)</label><textarea id="body" rows="7" placeholder="JSON document">&#123;&quot;type&quot;:&quot;doc&quot;,&quot;content&quot;:[]&#125;</textarea><label for="status">Status</label><select id="status"><option value="draft">Draft</option><option value="published">Published</option></select><button class="button" type="submit">Save article</button><p id="article-message" class="form-message" role="status"></p></form>
+        <h2>Saved articles</h2><div id="articles-list" class="admin-list"></div>
+      </section>
+    </main>
+    <script type="module" define:vars={{ siteUrl, supabaseUrl, anonKey }}>
+      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+      const supabase = createClient(supabaseUrl, anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+      const loginPanel = document.querySelector('#login-panel'); const dashboardPanel = document.querySelector('#dashboard-panel'); const loginMessage = document.querySelector('#login-message'); const articleMessage = document.querySelector('#article-message'); const list = document.querySelector('#articles-list');
+      const loadArticles = async (userId) => { const { data, error } = await supabase.from('articles').select('id,title,slug,status,updated_at').eq('author_id', userId).order('updated_at', { ascending: false }); if (error) { list.textContent = error.message; return; } list.innerHTML = data.length ? data.map((article) => `<article><strong>${article.title}</strong><span>${article.status} · /${article.slug}</span></article>`).join('') : '<p class="muted">No articles yet.</p>'; };
+      const showSession = async (session) => { if (!session) { loginPanel.hidden = false; dashboardPanel.hidden = true; return; } loginPanel.hidden = true; dashboardPanel.hidden = false; document.querySelector('#user-email').textContent = session.user.email; await loadArticles(session.user.id); };
+      document.querySelector('#login-form').addEventListener('submit', async (event) => { event.preventDefault(); loginMessage.textContent = 'Sending…'; const email = document.querySelector('#email').value; const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: `${siteUrl}/auth/callback` } }); loginMessage.textContent = error ? error.message : 'Check your email for the sign-in link.'; });
+      document.querySelector('#sign-out').addEventListener('click', async () => { await supabase.auth.signOut(); await showSession(null); });
+      document.querySelector('#article-form').addEventListener('submit', async (event) => { event.preventDefault(); articleMessage.textContent = 'Saving…'; const { data: { user } } = await supabase.auth.getUser(); let body; try { body = JSON.parse(document.querySelector('#body').value); } catch { articleMessage.textContent = 'Body must be valid JSON.'; return; } const status = document.querySelector('#status').value; const { error } = await supabase.from('articles').insert({ author_id: user.id, title: document.querySelector('#title').value, slug: document.querySelector('#slug').value, excerpt: document.querySelector('#excerpt').value, body, status, published_at: status === 'published' ? new Date().toISOString() : null }); articleMessage.textContent = error ? error.message : 'Article saved.'; if (!error) { event.target.reset(); await loadArticles(user.id); } });
+      supabase.auth.onAuthStateChange((_event, session) => showSession(session)); const { data: { session } } = await supabase.auth.getSession(); showSession(session);
+    </script>
+  </body>
+</html>

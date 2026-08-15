@@ -1,0 +1,24 @@
+---
+const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'https://andreasandreou-site.netlify.app';
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+---
+
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Signing in…</title></head>
+  <body style="font-family:Arial,sans-serif;padding:3rem;background:#f7f4ed;color:#10223c">
+    <p id="message">Signing you in…</p>
+    <script type="module" define:vars={{ siteUrl, supabaseUrl, anonKey }}>
+      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+      const message = document.querySelector('#message');
+      const supabase = createClient(supabaseUrl, anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+      const finish = async () => {
+        const { error } = await supabase.auth.getSession();
+        if (error) { message.textContent = `Sign-in failed: ${error.message}`; return; }
+        window.location.replace(`${siteUrl}/admin`);
+      };
+      finish();
+    </script>
+  </body>
+</html>

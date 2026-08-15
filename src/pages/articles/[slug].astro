@@ -8,7 +8,7 @@ if (!article) Astro.response.status = 404;
 const blocks = article ? bodyBlocks(article.body) : [];
 ---
 
-<Layout title={article ? `${article.title} — Andreas Andreou` : 'Article not found'} description={article?.excerpt || 'Article by Andreas Andreou.'}>
+<Layout title={article ? `${article.title} — Andreas Andreou` : 'Article not found'} description={article?.excerpt || 'Article by Andreas Andreou.'} image={article?.cover_image_path || undefined}>
   {article ? (
     <>
       <section class="section wrap article-hero">

@@ -5,9 +5,10 @@ import Footer from '../components/Footer.astro';
 interface Props {
   title: string;
   description: string;
+  image?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, image } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,6 +18,12 @@ const { title, description } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={Astro.url.href} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    {image && <meta property="og:image" content={new URL(image, Astro.url).href} />}
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
     <link rel="icon" href="/assets/favicon.svg" />
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/articles.css" />

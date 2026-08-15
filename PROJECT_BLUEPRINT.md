@@ -4,7 +4,7 @@
 >
 > Last updated: 2026-08-15
 >
-> Status: Phase 1 in progress; current public pages are migrated to an Astro feature branch.
+> Status: Phase 1 complete; public frontend migration is ready for preview deployment.
 
 ## 1. Project objective
 
@@ -337,7 +337,7 @@ Before the first migration:
 
 - [x] Create the new production repository.
 - [x] Migrate the current public design into Astro pages.
-- [ ] Extract shared header/footer/layout components.
+- [x] Extract shared header/footer/layout components.
 - [x] Reproduce current pages and routes: `/`, `/bio`, `/work`, `/public-contribution`.
 - [x] Run `astro check`, production build and local route checks.
 
@@ -349,7 +349,7 @@ Current verification:
 - `astro build`: successful with the Netlify adapter;
 - local checks: all four public routes plus `/styles.css` and favicon returned `200`.
 
-The Netlify adapter does not support Astro's local `preview` command. Local verification currently uses the Astro development server; Netlify preview deployment will be the production-runtime verification step.
+The Netlify adapter does not support Astro's local `preview` command. Local verification uses the Astro development server; Netlify preview deployment remains the production-runtime verification step.
 
 ### Phase 2 — Netlify deployment
 

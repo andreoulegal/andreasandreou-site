@@ -4,7 +4,7 @@
 >
 > Last updated: 2026-08-15
 >
-> Status: Phase 2 complete for isolated Netlify deployment; custom domain and production DNS are unchanged.
+> Status: Phase 3 foundation in progress; Supabase database and storage are configured, while Auth and the dashboard remain next.
 
 ## 1. Project objective
 
@@ -93,6 +93,18 @@ The current GitHub repositories and current Papaki-hosted website were disconnec
 - Netlify publish directory: `dist`
 - Latest isolated Netlify deployment: published successfully from commit `5bf3189`
 - The custom domain, Papaki hosting and DNS remain unchanged.
+
+### Supabase foundation
+
+- Project: `andreasandreou-site`
+- Project ref: `nlrqgufqwcbosdlrazwr`
+- Region: Central EU (Frankfurt), `eu-central-1`
+- Project URL: `https://nlrqgufqwcbosdlrazwr.supabase.co`
+- Database: `public.articles` with draft/published/archived states
+- Security: Row Level Security enabled with public published-article reads and author-owned writes
+- Storage: public `article-media` bucket, 5 MB image limit, authenticated uploads scoped to the user's folder
+- Local migration: `supabase/migrations/20260815170014_articles_foundation.sql`
+- Netlify production context has the public Supabase URL and publishable key configured; private keys are not stored in GitHub.
 
 ## 3. Target architecture
 
@@ -367,12 +379,12 @@ The Netlify adapter does not support Astro's local `preview` command. Local veri
 
 ### Phase 3 — Supabase foundation
 
-- [ ] Create Supabase project.
-- [ ] Add migrations.
-- [ ] Create `articles` schema.
-- [ ] Configure Auth.
-- [ ] Configure Storage.
-- [ ] Write and test RLS policies.
+- [x] Create Supabase project.
+- [x] Add the first migration.
+- [x] Create `articles` schema.
+- [ ] Configure Auth redirect URLs and first admin account.
+- [x] Configure Storage bucket for article media.
+- [x] Write and verify RLS policies.
 
 ### Phase 4 — Dashboard
 

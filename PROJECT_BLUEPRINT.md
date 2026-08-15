@@ -80,11 +80,12 @@ The current GitHub repositories and current Papaki-hosted website are disconnect
 ### New production repository
 
 - Repository: [`andreoulegal/andreasandreou-site`](https://github.com/andreoulegal/andreasandreou-site)
+- Default branch: `main`
 - Working branch: `foundation/capture-live-site`
 - Initial commit: `1d5d553`
 - Visibility: public
 - Current branch contents: project instructions, blueprint, README and a captured snapshot under `legacy-live/`
-- The default `main` branch has not been changed.
+- No Netlify connection, DNS change or production deployment exists yet.
 
 ## 3. Target architecture
 

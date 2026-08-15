@@ -51,3 +51,8 @@ export function nodeText(node: unknown): string {
   if ('content' in node && Array.isArray(node.content)) return node.content.map(nodeText).join('');
   return '';
 }
+
+export function blockType(node: unknown): string {
+  if (node && typeof node === 'object' && 'type' in node && typeof node.type === 'string') return node.type;
+  return 'paragraph';
+}

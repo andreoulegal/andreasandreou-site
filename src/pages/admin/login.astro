@@ -36,7 +36,7 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
     <script type="module" is:inline>
       const { siteUrl, supabaseUrl, anonKey } = JSON.parse(document.querySelector('#admin-config').textContent);
       const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
-      const supabase = createClient(supabaseUrl, anonKey, { auth: { persistSession: true, autoRefreshToken: true } });
+      const supabase = createClient(supabaseUrl, anonKey, { auth: { persistSession: true, autoRefreshToken: true, flowType: 'pkce', detectSessionInUrl: true } });
       const form = document.querySelector('#login-form');
       const message = document.querySelector('#login-message');
 

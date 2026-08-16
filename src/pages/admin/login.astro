@@ -1,5 +1,4 @@
 ---
-const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'https://andreasandreou.gr';
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 ---
@@ -32,21 +31,17 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
       </section>
     </main>
 
-    <script type="application/json" id="admin-config" set:html={JSON.stringify({ siteUrl, supabaseUrl, anonKey })}></script>
+    <script type="application/json" id="admin-config" set:html={JSON.stringify({ supabaseUrl, anonKey })}></script>
     <script type="module" is:inline>
-      const { siteUrl, supabaseUrl, anonKey } = JSON.parse(document.querySelector('#admin-config').textContent);
+      const { supabaseUrl, anonKey } = JSON.parse(document.querySelector('#admin-config').textContent);
       const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
-      const supabase = createClient(supabaseUrl, anonKey, { auth: { persistSession: true, autoRefreshToken: true, flowType: 'pkce', detectSessionInUrl: true } });
+      const supabase = createClient(supabaseUrl, anonKey, { auth: { persistSession: true, autoRefreshToken: true } });
       const form = document.querySelector('#login-form');
       const message = document.querySelector('#login-message');
 
       document.querySelector('#google-login').addEventListener('click', async () => {
         message.textContent = 'Opening Google…';
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: { redirectTo: `${siteUrl}/admin/login` }
-        });
-        if (error) message.textContent = error.message;
+        window.location.assign('/auth/google');
       });
 
       form.addEventListener('submit', async (event) => {

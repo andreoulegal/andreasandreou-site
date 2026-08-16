@@ -65,13 +65,43 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
       const fillForm = (article) => { $('#article-id').value = article.id; $('#title').value = article.title; $('#slug').value = article.slug; $('#excerpt').value = article.excerpt || ''; $('#category').value = article.category || ''; $('#cover-url').value = article.cover_image_path || ''; $('#editor').innerHTML = bodyToHtml(article.body); $('#status').value = article.status; $('#save-article').textContent = 'Update article'; $('#cancel-edit').hidden = false; window.scrollTo({ top: 0, behavior: 'smooth' }); };
       const deleteArticle = async (article) => { if (!window.confirm(`Delete “${article.title}”?`)) return; const { error } = await supabase.from('articles').delete().eq('id', article.id).eq('author_id', currentUser.id); articleMessage.textContent = error ? error.message : 'Article deleted.'; if (!error) await loadArticles(); };
       const uploadCover = async (file) => { if (!file) return null; if (file.size > 5 * 1024 * 1024) throw new Error('The image must be smaller than 5 MB.'); const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-'); const path = `${currentUser.id}/${crypto.randomUUID()}-${safeName}`; const { error } = await supabase.storage.from('article-media').upload(path, file, { contentType: file.type, upsert: false }); if (error) throw error; const { data } = supabase.storage.from('article-media').getPublicUrl(path); return data.publicUrl; };
-      const showSession = async (session) => { currentUser = session?.user || null; if (!currentUser) { window.location.replace('/admin/login'); return; } $('#user-email').textContent = currentUser.email; await loadArticles(); };
+      let authReady = false;
+      const showSession = async (session) => {
+        currentUser = session?.user || null;
+        if (!currentUser) {
+          if (authReady) window.location.replace('/admin/login');
+          return;
+        }
+        $('#user-email').textContent = currentUser.email;
+        await loadArticles();
+      };
 
-      $('#sign-out').addEventListener('click', async () => { await supabase.auth.signOut(); resetForm(); await showSession(null); });
+      $('#sign-out').addEventListener('click', async (event) => {
+        event.preventDefault();
+        const button = $('#sign-out');
+        button.disabled = true;
+        button.textContent = 'Signing out…';
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          button.disabled = false;
+          button.textContent = 'Sign out';
+          articleMessage.textContent = error.message;
+          return;
+        }
+        resetForm();
+        window.location.replace('/admin/login');
+      });
       $('#cancel-edit').addEventListener('click', () => { resetForm(); articleMessage.textContent = ''; });
       document.querySelectorAll('[data-command]').forEach((button) => button.addEventListener('click', () => { const command = button.dataset.command; if (command === 'createLink') { const url = window.prompt('Link URL'); if (url) document.execCommand(command, false, url); } else document.execCommand(command, false, button.dataset.value || null); $('#editor').focus(); }));
       $('#article-form').addEventListener('submit', async (event) => { event.preventDefault(); articleMessage.textContent = 'Saving…'; try { const body = editorToBody(); const uploadedUrl = await uploadCover($('#cover-image').files[0]); const coverUrl = uploadedUrl || $('#cover-url').value || null; const status = $('#status').value; const payload = { title: $('#title').value, slug: $('#slug').value, excerpt: $('#excerpt').value, category: $('#category').value || null, body, status, published_at: status === 'published' ? new Date().toISOString() : null, cover_image_path: coverUrl }; const id = $('#article-id').value; const result = id ? await supabase.from('articles').update(payload).eq('id', id).eq('author_id', currentUser.id) : await supabase.from('articles').insert({ ...payload, author_id: currentUser.id }); if (result.error) throw result.error; articleMessage.textContent = id ? 'Article updated.' : 'Article saved.'; resetForm(); await loadArticles(); } catch (error) { articleMessage.textContent = error.message; } });
-      resetForm(); supabase.auth.onAuthStateChange((_event, session) => showSession(session)); const { data: { session } } = await supabase.auth.getSession(); await showSession(session);
+      resetForm();
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_OUT') window.location.replace('/admin/login');
+        else if (event === 'SIGNED_IN' && authReady) void showSession(session);
+      });
+      const { data: { session } } = await supabase.auth.getSession();
+      authReady = true;
+      await showSession(session);
     </script>
   </body>
 </html>

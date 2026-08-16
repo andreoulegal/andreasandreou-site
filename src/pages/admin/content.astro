@@ -1,0 +1,63 @@
+---
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Site content — Andreas Andreou</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin.css" />
+  </head>
+  <body>
+    <main class="admin-shell">
+      <section class="admin-card content-editor-card">
+        <div class="admin-heading">
+          <div><p class="eyebrow">Private workspace</p><h1>Site content</h1></div>
+          <a class="text-link" href="/admin">Articles</a>
+        </div>
+        <p class="muted">Edit homepage wording without changing GitHub code. Save as draft while working, then publish when ready.</p>
+        <form id="content-form" class="article-form">
+          <label for="hero-headline">Hero headline</label><textarea id="hero-headline" rows="3"></textarea>
+          <div class="admin-grid-two"><div><label for="hero-explore">Explore link label</label><input id="hero-explore" /></div><div><label for="hero-conversation">Conversation link label</label><input id="hero-conversation" /></div></div>
+          <label for="expertise-title">Expertise title</label><input id="expertise-title" />
+          <h2>Expertise cards</h2>
+          <div id="expertise-cards"></div>
+          <label for="procura-title">Procura title</label><input id="procura-title" />
+          <label for="procura-body">Procura description</label><textarea id="procura-body" rows="3"></textarea>
+          <label for="public-title">Public contribution title</label><input id="public-title" />
+          <label for="public-body">Public contribution description</label><textarea id="public-body" rows="3"></textarea>
+          <label for="services-items">Services (one item per line)</label><textarea id="services-items" rows="6"></textarea>
+          <label for="notes-title">Notes title</label><input id="notes-title" />
+          <label for="closing-title">Closing section title</label><textarea id="closing-title" rows="2"></textarea>
+          <label for="content-status">Save status</label><select id="content-status"><option value="draft">Draft</option><option value="published">Published</option></select>
+          <div class="form-actions"><button class="button" type="submit">Save content</button><a class="text-link" href="/" target="_blank" rel="noreferrer">Open site</a></div>
+          <p id="content-message" class="form-message" role="status"></p>
+        </form>
+      </section>
+    </main>
+    <script type="application/json" id="admin-config" set:html={JSON.stringify({ supabaseUrl, anonKey })}></script>
+    <script type="module" is:inline>
+      const { supabaseUrl, anonKey } = JSON.parse(document.querySelector('#admin-config').textContent);
+      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+      const supabase = createClient(supabaseUrl, anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+      const $ = (selector) => document.querySelector(selector);
+      const message = $('#content-message');
+      let currentUser = null;
+      let values = new Map();
+      const text = (key, fallback = '') => { const value = values.get(key); return typeof value === 'string' ? value : fallback; };
+      const array = (key, fallback = []) => { const value = values.get(key); return Array.isArray(value) ? value : fallback; };
+      const set = (key, value) => values.set(key, value);
+      const renderCards = () => { $('#expertise-cards').replaceChildren(...array('home.expertise.cards', []).map((card, index) => { const wrapper = document.createElement('fieldset'); wrapper.className = 'content-card-field'; wrapper.innerHTML = `<legend>Card ${index + 1}</legend><label>Title</label><input data-card-title="${index}"><label>Description</label><textarea data-card-body="${index}" rows="2"></textarea>`; wrapper.querySelector('[data-card-title]').value = card.title || ''; wrapper.querySelector('[data-card-body]').value = card.body || ''; return wrapper; })); };
+      const fill = () => { $('#hero-headline').value = text('home.hero.headline'); $('#hero-explore').value = text('home.hero.explore_label'); $('#hero-conversation').value = text('home.hero.conversation_label'); $('#expertise-title').value = text('home.expertise.title'); $('#procura-title').value = text('home.procura.title'); $('#procura-body').value = text('home.procura.body'); $('#public-title').value = text('home.public_contribution.title'); $('#public-body').value = text('home.public_contribution.body'); $('#services-items').value = array('home.services.items').join('\n'); $('#notes-title').value = text('home.notes.title'); $('#closing-title').value = text('home.closing.title'); renderCards(); };
+      const load = async () => { const { data, error } = await supabase.from('site_content').select('content_key,value,status').order('content_key'); if (error) { message.textContent = error.message; return; } values = new Map((data || []).map((row) => [row.content_key, row.value])); $('#content-status').value = data?.find((row) => row.status === 'draft') ? 'draft' : 'published'; fill(); };
+      const collect = () => { set('home.hero.headline', $('#hero-headline').value); set('home.hero.explore_label', $('#hero-explore').value); set('home.hero.conversation_label', $('#hero-conversation').value); set('home.expertise.title', $('#expertise-title').value); set('home.procura.title', $('#procura-title').value); set('home.procura.body', $('#procura-body').value); set('home.public_contribution.title', $('#public-title').value); set('home.public_contribution.body', $('#public-body').value); set('home.services.items', $('#services-items').value.split('\n').map((item) => item.trim()).filter(Boolean)); set('home.notes.title', $('#notes-title').value); set('home.closing.title', $('#closing-title').value); set('home.expertise.cards', array('home.expertise.cards').map((card, index) => ({ ...card, title: document.querySelector(`[data-card-title="${index}"]`).value, body: document.querySelector(`[data-card-body="${index}"]`).value }))); };
+      $('#content-form').addEventListener('submit', async (event) => { event.preventDefault(); collect(); message.textContent = 'Saving…'; const status = $('#content-status').value; const now = status === 'published' ? new Date().toISOString() : null; const rows = [...values.entries()].filter(([key]) => key.startsWith('home.')).map(([content_key, value]) => ({ content_key, section: 'home', value, status, published_at: now, updated_by: currentUser.id })); const { error } = await supabase.from('site_content').upsert(rows, { onConflict: 'content_key' }); message.textContent = error ? error.message : status === 'published' ? 'Content published.' : 'Draft saved.'; });
+      const showSession = async (session) => { currentUser = session?.user || null; if (!currentUser) { window.location.replace('/admin/login'); return; } await load(); };
+      supabase.auth.onAuthStateChange((_event, session) => showSession(session)); const { data: { session } } = await supabase.auth.getSession(); await showSession(session);
+    </script>
+  </body>
+</html>

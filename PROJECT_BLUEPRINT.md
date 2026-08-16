@@ -196,6 +196,52 @@ Supabase is the primary backend platform. Use:
 
 Avoid introducing a second backend platform unless a concrete requirement appears.
 
+### Editable site content CMS (approved 2026-08-16)
+
+The visual system and layout remain source-controlled in GitHub. Text that should be
+editable without a code change will live in Supabase and will be managed through the
+authenticated `/admin` dashboard.
+
+```text
+Admin dashboard
+        ↓ authenticated API requests
+Supabase Auth + PostgreSQL
+        ↓ published content reads
+Astro SSR pages on Netlify
+        ↓
+andreasandreou.gr
+```
+
+The first CMS scope covers the homepage and site chrome:
+
+- hero headline and CTA labels/links;
+- expertise introduction and four expertise cards;
+- Procura section copy and link;
+- public contribution copy and CTA;
+- services list items;
+- notes heading and labels;
+- closing/bio copy and CTA;
+- navigation labels, URLs and visibility;
+- SEO title and description.
+
+The following remain code-controlled and are not editable from the first CMS version:
+
+- layout and component structure;
+- CSS, typography, colors and responsive behavior;
+- animations and interactions;
+- routes and access-control logic.
+
+Publishing workflow:
+
+```text
+Edit → save draft → preview → publish → public SSR read
+```
+
+Public pages must read only published content. The database model will support draft
+and published states, timestamps and a safe fallback to source defaults if content is
+missing during deployment or local development. Admin writes must be restricted by
+Supabase Auth and RLS; no service-role key may reach the browser.
+
 ## 5. Content model
 
 Initial `articles` table proposal:
@@ -225,6 +271,59 @@ AND published_at is null OR published_at <= current time
 ```
 
 The exact database query and security policy must enforce this rule rather than relying only on frontend filtering.
+
+### CMS content model
+
+Add the following tables through a versioned Supabase migration:
+
+```text
+site_content
+- id UUID primary key
+- content_key text unique not null
+- section text not null
+- value jsonb not null
+- status draft | published
+- published_at timestamp nullable
+- created_at timestamp
+- updated_at timestamp
+- updated_by UUID references auth.users
+
+navigation_items
+- id UUID primary key
+- label text not null
+- href text not null
+- display_order integer not null
+- visible boolean not null default true
+- status draft | published
+- updated_at timestamp
+- updated_by UUID references auth.users
+
+site_settings
+- id UUID primary key
+- setting_key text unique not null
+- value jsonb not null
+- status draft | published
+- updated_at timestamp
+- updated_by UUID references auth.users
+```
+
+Use stable content keys rather than hard-coded positional assumptions, for example
+`home.hero.headline`, `home.expertise.cards.1.title` and `seo.home.description`.
+The first implementation may use one row per editable field; a later revision can
+introduce revisions or a dedicated content-version table after the workflow is proven.
+
+RLS requirements:
+
+- anonymous users can select published public content only;
+- the authenticated admin can select, insert and update CMS drafts and published rows;
+- no anonymous insert/update/delete policies;
+- update policies include both `USING` and `WITH CHECK` conditions;
+- authorization must use authenticated identity/app metadata, never editable user metadata;
+- every exposed CMS table has RLS enabled and its Data API grants verified.
+
+Rollback: if a CMS read fails, public pages use versioned source defaults and continue
+rendering. If the migration is not accepted, remove the CMS reads and retain the
+existing hard-coded copy; no existing article rows are changed by this feature.
 
 ## 6. Repository structure
 
@@ -400,6 +499,19 @@ The Netlify adapter does not support Astro's local `preview` command. Local veri
 - [x] Add image uploads.
 - [ ] Add preview functionality.
 
+### Phase 4A — Editable site content CMS (implementation in progress)
+
+- [x] Create and apply a versioned Supabase migration for `site_content`, `navigation_items` and `site_settings`.
+- [x] Enable and verify Data API exposure and RLS for every CMS table.
+- [x] Add a typed content-access layer with published-only public reads and safe source defaults.
+- [x] Add homepage content editor to `/admin`.
+- [x] Read published navigation from the CMS with a source-controlled fallback.
+- [ ] Add navigation and SEO settings editors.
+- [ ] Add draft, preview and publish workflow for site content.
+- [ ] Add content validation for required fields, links and text lengths.
+- [ ] Verify that content edits do not require GitHub commits, builds or deployments in a non-production preview deployment.
+- [ ] Verify rollback to source defaults and document the publishing workflow.
+
 ### Phase 5 — Public articles
 
 - [x] Add `/articles` index.
@@ -456,6 +568,7 @@ The project is considered complete only when:
 | 2026-08-15 | Store articles in database, not Markdown files | Enables dashboard publishing without code edits |
 | 2026-08-16 | Protect `/admin` in Astro middleware and exchange auth codes server-side | Prevents unauthenticated dashboard access and makes the Supabase magic-link flow work with secure server cookies |
 | 2026-08-16 | Add dynamic sitemap, robots policy and production site URL environment variable | Makes article discovery explicit and keeps auth redirects on the custom domain |
+| 2026-08-16 | Store editable homepage/site text in Supabase and manage it through `/admin` | Allows content changes without GitHub edits or Netlify deployments while keeping layout and design source-controlled |
 
 ## 14. Change-control rule
 

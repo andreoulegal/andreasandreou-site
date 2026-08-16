@@ -1,12 +1,17 @@
+---
+import { getPublishedNavigation } from '../lib/siteContent';
+
+const navigation = await getPublishedNavigation();
+---
+
 <header class="site-header wrap">
   <a class="wordmark" href="/">Andreas Andreou</a>
   <nav class="nav" aria-label="Primary">
-    <a href="/bio">Bio</a>
-    <a href="/work">Work</a>
-    <a href="/public-contribution">Public life</a>
-    <a href="https://www.procura.gr/" target="_blank" rel="noreferrer">Procura ↗</a>
-    <a href="/#ideas">Ideas</a>
-    <a href="/articles">Articles</a>
+    {navigation.map((item) => (
+      <a href={item.href} target={item.href.startsWith('http') ? '_blank' : undefined} rel={item.href.startsWith('http') ? 'noreferrer' : undefined}>
+        {item.label}
+      </a>
+    ))}
   </nav>
   <a class="contact" href="/#contact">Contact</a>
 </header>

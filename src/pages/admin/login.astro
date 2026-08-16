@@ -1,4 +1,5 @@
 ---
+const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'https://andreasandreou.gr';
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 ---
@@ -18,6 +19,8 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
         <p class="eyebrow">Private workspace</p>
         <h1>Articles dashboard</h1>
         <p>Sign in with your administrator email and password to manage the site.</p>
+        <button class="button button-google" id="google-login" type="button">Continue with Google</button>
+        <p class="admin-divider">or use email and password</p>
         <form id="login-form">
           <label for="email">Email</label>
           <input id="email" type="email" value="andreoulegal@gmail.com" required />
@@ -29,13 +32,22 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
       </section>
     </main>
 
-    <script type="application/json" id="admin-config" set:html={JSON.stringify({ supabaseUrl, anonKey })}></script>
+    <script type="application/json" id="admin-config" set:html={JSON.stringify({ siteUrl, supabaseUrl, anonKey })}></script>
     <script type="module" is:inline>
-      const { supabaseUrl, anonKey } = JSON.parse(document.querySelector('#admin-config').textContent);
+      const { siteUrl, supabaseUrl, anonKey } = JSON.parse(document.querySelector('#admin-config').textContent);
       const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
       const supabase = createClient(supabaseUrl, anonKey, { auth: { persistSession: true, autoRefreshToken: true } });
       const form = document.querySelector('#login-form');
       const message = document.querySelector('#login-message');
+
+      document.querySelector('#google-login').addEventListener('click', async () => {
+        message.textContent = 'Opening Google…';
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: `${siteUrl}/auth/callback` }
+        });
+        if (error) message.textContent = error.message;
+      });
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault();

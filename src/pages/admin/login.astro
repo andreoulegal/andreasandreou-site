@@ -44,7 +44,7 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
         message.textContent = 'Opening Google…';
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
-          options: { redirectTo: `${siteUrl}/auth/callback` }
+          options: { redirectTo: `${siteUrl}/oauth/callback` }
         });
         if (error) message.textContent = error.message;
       });

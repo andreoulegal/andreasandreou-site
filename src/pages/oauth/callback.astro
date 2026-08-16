@@ -1,0 +1,12 @@
+---
+import { createSupabaseServerClient } from '../../lib/supabase/server';
+
+const code = Astro.url.searchParams.get('code');
+if (!code) return new Response('Missing authentication code.', { status: 400 });
+
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+const { error } = await supabase.auth.exchangeCodeForSession(code);
+if (error) return new Response(`Sign-in failed: ${error.message}`, { status: 400 });
+
+return Astro.redirect(new URL('/admin', Astro.url));
+---

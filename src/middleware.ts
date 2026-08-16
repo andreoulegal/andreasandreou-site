@@ -9,6 +9,13 @@ export const onRequest = defineMiddleware(async ({ request, cookies, redirect, u
   if (!isAdminPath) return next();
 
   const supabase = createSupabaseServerClient(request, cookies);
+
+  const authCode = isLoginPath ? url.searchParams.get('code') : null;
+  if (authCode) {
+    const { error } = await supabase.auth.exchangeCodeForSession(authCode);
+    if (!error) return redirect('/admin');
+  }
+
   const { data, error } = await supabase.auth.getClaims();
   const isAuthenticated = !error && Boolean(data?.claims?.sub);
 

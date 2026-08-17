@@ -57,6 +57,16 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
       const collect = () => { set('home.hero.headline', $('#hero-headline').value); set('home.hero.explore_label', $('#hero-explore').value); set('home.hero.conversation_label', $('#hero-conversation').value); set('home.expertise.title', $('#expertise-title').value); set('home.procura.title', $('#procura-title').value); set('home.procura.body', $('#procura-body').value); set('home.public_contribution.title', $('#public-title').value); set('home.public_contribution.body', $('#public-body').value); set('home.services.items', $('#services-items').value.split('\n').map((item) => item.trim()).filter(Boolean)); set('home.notes.title', $('#notes-title').value); set('home.closing.title', $('#closing-title').value); set('home.expertise.cards', array('home.expertise.cards').map((card, index) => ({ ...card, title: document.querySelector(`[data-card-title="${index}"]`).value, body: document.querySelector(`[data-card-body="${index}"]`).value }))); };
       $('#content-form').addEventListener('submit', async (event) => { event.preventDefault(); collect(); message.textContent = 'Saving…'; const status = $('#content-status').value; const now = status === 'published' ? new Date().toISOString() : null; const rows = [...values.entries()].filter(([key]) => key.startsWith('home.')).map(([content_key, value]) => ({ content_key, section: 'home', value, status, published_at: now, updated_by: currentUser.id })); const { error } = await supabase.from('site_content').upsert(rows, { onConflict: 'content_key' }); message.textContent = error ? error.message : status === 'published' ? 'Content published.' : 'Draft saved.'; });
       let authReady = false;
+      const getUsableSession = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) return session;
+        const response = await fetch('/auth/session', { credentials: 'same-origin' });
+        if (!response.ok) return null;
+        const { session: serverSession } = await response.json();
+        if (!serverSession) return null;
+        await supabase.auth.setSession({ access_token: serverSession.access_token, refresh_token: serverSession.refresh_token });
+        return serverSession;
+      };
       const showSession = async (session) => {
         currentUser = session?.user || null;
         if (!currentUser) {
@@ -69,7 +79,7 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
         if (event === 'SIGNED_OUT') window.location.replace('/admin/login');
         else if (event === 'SIGNED_IN' && authReady) void showSession(session);
       });
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getUsableSession();
       authReady = true;
       await showSession(session);
     </script>

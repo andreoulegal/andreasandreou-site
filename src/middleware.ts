@@ -17,10 +17,15 @@ export const onRequest = defineMiddleware(async ({ request, cookies, redirect, u
   }
 
   const { data, error } = await supabase.auth.getClaims();
-  const isAuthenticated = !error && Boolean(data?.claims?.sub);
+  const userId = typeof data?.claims?.sub === 'string' ? data.claims.sub : null;
+  const isAuthenticated = !error && Boolean(userId);
+  const { data: adminMembership, error: adminError } = userId
+    ? await supabase.from('site_admins').select('user_id').eq('user_id', userId).maybeSingle()
+    : { data: null, error: null };
+  const isSiteAdmin = !adminError && Boolean(adminMembership?.user_id);
 
-  if (!isLoginPath && !isAuthenticated) return redirect('/admin/login');
-  if (isLoginPath && isAuthenticated) return redirect('/admin');
+  if (!isLoginPath && (!isAuthenticated || !isSiteAdmin)) return redirect('/admin/login');
+  if (isLoginPath && isSiteAdmin) return redirect('/admin');
 
   return next();
 });

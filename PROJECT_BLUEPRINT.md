@@ -2,9 +2,9 @@
 
 > Living technical reference for the website, public content platform and admin dashboard.
 >
-> Last updated: 2026-08-16
+> Last updated: 2026-08-17
 >
-> Status: Netlify is serving the production site and the custom domain. GitHub `main` is the production source. Admin hardening, SEO routes and the blueprint are deployed and live from commit `8cf12a3`.
+> Status: Netlify is serving the production site and the custom domain. GitHub `main` is the production source. Google admin authentication, CMS navigation/SEO editing, server session synchronization and smoke-test tooling are implemented in the current production line.
 
 ## 1. Project objective
 
@@ -81,7 +81,7 @@ The production path is now connected: GitHub repository `andreoulegal/andreasand
 - Netlify deploy branch: `main`
 - Netlify build command: `pnpm run build`
 - Netlify publish directory: `dist`
-- Latest production deployment was published successfully from `main` at commit `8cf12a3`.
+- Latest production deployments are published automatically from `main` after a successful build.
 - The custom domain is attached to Netlify and DNS is already delegated to Netlify.
 
 ### Supabase foundation
@@ -162,8 +162,8 @@ Article pages should be server-rendered or otherwise generated in an SEO-friendl
 Initial dashboard route:
 
 - Netlify preview: `https://andreasandreou-site.netlify.app/admin`
-- The first implementation supports email magic-link login, listing the signed-in author's articles and creating draft/published records.
-- The first implementation supports creating, editing and deleting an author's articles, draft/published/archived status, a basic visual editor and cover-image upload to the `article-media` bucket. Public routes `/articles` and `/articles/[slug]` read only eligible published records. A more advanced editor and server-side SSR session middleware remain follow-up work.
+- The current implementation supports Google OAuth login, server-side session cookies, sign-out, listing the signed-in admin's articles and creating draft/published records.
+- The current implementation supports creating, editing and deleting an author's articles, draft/published/archived status, a basic visual editor and cover-image upload to the `article-media` bucket. Public routes `/articles` and `/articles/[slug]` read only eligible published records. A more advanced editor and article preview remain follow-up work.
 
 ```text
 /admin
@@ -182,7 +182,7 @@ Initial features:
 - delete/archive article;
 - basic search and filtering.
 
-The dashboard is protected by authentication. A hidden URL is not considered security.
+The dashboard is protected by authentication and membership in `site_admins`. A hidden URL is not considered security.
 
 ### Backend
 
@@ -231,6 +231,9 @@ The following remain code-controlled and are not editable from the first CMS ver
 - animations and interactions;
 - routes and access-control logic.
 
+The current dashboard exposes homepage copy, navigation labels/URLs/visibility and
+homepage SEO title/description. Preview and revision history remain follow-up work.
+
 Publishing workflow:
 
 ```text
@@ -241,6 +244,15 @@ Public pages must read only published content. The database model will support d
 and published states, timestamps and a safe fallback to source defaults if content is
 missing during deployment or local development. Admin writes must be restricted by
 Supabase Auth and RLS; no service-role key may reach the browser.
+
+### Security and verification status (2026-08-17)
+
+- RLS is enabled on articles, site content, navigation, settings and site-admin membership.
+- The admin middleware checks both a valid Supabase session and `site_admins` membership.
+- The browser uses a short server session bridge when local session state is missing; the endpoint is `no-store` and admin-protected.
+- `pnpm run check` and `pnpm run build` pass with no errors.
+- `pnpm run test:smoke` verifies public routes, protected admin redirects and auth endpoints.
+- The Astro/Netlify dependency upgrade reduced the audit findings; four transitive vulnerabilities remain in upstream Netlify image/build tooling and should be revisited when patched releases become available.
 
 ## 5. Content model
 

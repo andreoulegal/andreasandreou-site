@@ -9,6 +9,8 @@ const content = await getPublishedSiteContent();
 const expertiseCards = contentArray<{ number: string; title: string; body: string }>(content, 'home.expertise.cards');
 const expertiseCategories = contentArray<string>(content, 'home.expertise.category_line');
 const serviceItems = contentArray<string>(content, 'home.services.items');
+const heroHeadline = contentText(content, 'home.hero.headline');
+const heroParts = heroHeadline.match(/^(.*?)(regulation, technology)(.*?)(public institutions\.)$/);
 ---
 
 <Layout
@@ -21,10 +23,25 @@ const serviceItems = contentArray<string>(content, 'home.services.items');
         <img src="/assets/local-field.png" alt="" />
       </div>
       <div class="v16-hero-copy">
-        <h1>{contentText(content, 'home.hero.headline')}</h1>
+        <h1>{heroParts ? <>{heroParts[1]}<span class="hero-serif">{heroParts[2]}</span>{heroParts[3]}<span class="hero-serif">{heroParts[4]}</span></> : heroHeadline}</h1>
         <div class="v16-actions">
           <a class="v16-action" href={contentText(content, 'home.hero.explore_href')}>{contentText(content, 'home.hero.explore_label')} <span>↘</span></a>
-          <a class="v16-action" href={contentText(content, 'home.hero.conversation_href')}>{contentText(content, 'home.hero.conversation_label')} <span>↗</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="v16-about" id="bio">
+      <div class="v16-about-grid">
+        <figure>
+          <img src="/assets/andreas-europe-parliament-enhanced.png" alt={contentText(content, 'home.about.image_alt')} />
+          <figcaption>{contentText(content, 'home.about.image_caption')}</figcaption>
+        </figure>
+        <div class="v16-about-copy">
+          <p class="eyebrow">{contentText(content, 'home.about.eyebrow')}</p>
+          <p class="v16-about-intro">{contentText(content, 'home.about.intro')}</p>
+          <p>{contentText(content, 'home.about.practice')}</p>
+          <p>{contentText(content, 'home.about.public_role')}</p>
+          <a class="v16-button" href="/bio">{contentText(content, 'home.about.button_label')} <span>↗</span></a>
         </div>
       </div>
     </section>
@@ -41,8 +58,9 @@ const serviceItems = contentArray<string>(content, 'home.services.items');
     </section>
 
     <section class="v16-procura" id="services">
-      <a class="v16-procura-card" href="https://www.procura.gr/" target="_blank" rel="noreferrer" aria-label="Visit Procura">
-        <img src="/assets/procura-logo-source-hd.png" alt="Procura" />
+      <a class="v16-procura-mark" href="https://www.procura.gr/" target="_blank" rel="noreferrer" aria-label="Visit Procura">
+        <span class="procura-wordmark">Procura</span>
+        <span class="procura-caption">public procurement<br />research platform</span>
       </a>
       <div>
         <p class="eyebrow">{contentText(content, 'home.procura.eyebrow')}</p>
@@ -72,7 +90,7 @@ const serviceItems = contentArray<string>(content, 'home.services.items');
         <div><p class="eyebrow">{contentText(content, 'home.notes.eyebrow')}</p><h2>{contentText(content, 'home.notes.title')}</h2></div>
         <a class="v16-action" href="/articles">{contentText(content, 'home.notes.view_all_label')} <span>↗</span></a>
       </div>
-      <div class="v16-notes-grid">
+      <div class="v16-notes-list">
         {featuredArticles.length ? featuredArticles.map((article) => (
           <article>
             <p>{article.category || 'Article'}</p>
@@ -85,10 +103,10 @@ const serviceItems = contentArray<string>(content, 'home.services.items');
       </div>
     </section>
 
-    <section class="v16-closing" id="bio">
+    <section class="v16-closing" id="contact">
       <p class="eyebrow">{contentText(content, 'home.closing.eyebrow')}</p>
       <h2>{contentText(content, 'home.closing.title')}</h2>
-      <a class="v16-button" href="/bio">{contentText(content, 'home.closing.button_label')} <span>↗</span></a>
+      <a class="v16-button" href="mailto:andreoulegal@gmail.com">{contentText(content, 'home.closing.button_label')} <span>↗</span></a>
     </section>
   </div>
 </Layout>

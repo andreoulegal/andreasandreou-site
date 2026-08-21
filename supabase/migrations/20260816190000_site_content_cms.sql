@@ -186,9 +186,9 @@ values
   ('home.notes.eyebrow', 'home', to_jsonb('Notes'::text), 'published', now()),
   ('home.notes.title', 'home', to_jsonb('Recent thinking and updates'::text), 'published', now()),
   ('home.notes.view_all_label', 'home', to_jsonb('View all notes'::text), 'published', now()),
-  ('home.closing.eyebrow', 'home', to_jsonb('Andreas Andreou'::text), 'published', now()),
-  ('home.closing.title', 'home', to_jsonb('Lawyer, public-sector professional and founder based in Athens.'::text), 'published', now()),
-  ('home.closing.button_label', 'home', to_jsonb('Read my bio'::text), 'published', now()),
+  ('home.closing.eyebrow', 'home', to_jsonb('Start a conversation'::text), 'published', now()),
+  ('home.closing.title', 'home', to_jsonb('Good judgment should lead to a practical next step.'::text), 'published', now()),
+  ('home.closing.button_label', 'home', to_jsonb('Get in touch'::text), 'published', now()),
   ('seo.home.title', 'seo', to_jsonb('Andreas Andreou | Law, Regulation & Public Institutions'::text), 'published', now()),
   ('seo.home.description', 'seo', to_jsonb('Helping businesses create value through regulation, technology and public institutions.'::text), 'published', now())
 on conflict (content_key) do nothing;

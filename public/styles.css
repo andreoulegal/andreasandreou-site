@@ -23,7 +23,8 @@
 .v16-hero-art:after{background:linear-gradient(90deg,var(--paper) 0%,rgba(246,245,241,.94) 14%,rgba(246,245,241,.46) 37%,rgba(246,245,241,.08) 62%,transparent 76%)}
 .v16-hero-copy{width:min(610px,53vw)}
 .v16-hero h1{font-size:clamp(39px,4.05vw,60px);line-height:1.08;letter-spacing:-.045em}
-.v16-hero h1 .hero-serif,.v16-hero h1 .mixed-serif,.v16-about-copy .mixed-serif{font-family:Newsreader,serif;font-weight:300;letter-spacing:-.055em}
+.v16-hero h1 .hero-serif,.v16-hero h1 .mixed-serif{font-family:Newsreader,serif;font-weight:300;letter-spacing:-.055em}
+.v16-about-copy .mixed-serif{font-family:Newsreader,serif;font-weight:400;letter-spacing:-.02em;color:inherit}
 .v16-actions{gap:28px;margin-top:40px}
 .v16-action{min-width:142px;gap:18px;padding-bottom:6px;border-bottom-color:#8b9299;font-size:12px}
 .v16-action span{font-size:16px}

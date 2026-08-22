@@ -16,10 +16,10 @@ const mixedParts = (text: string, phrases: string[]): MixedPart[] => {
   const pattern = new RegExp(`(${escaped.join('|')})`, 'g');
   return text.split(pattern).filter(Boolean).map((part) => ({ text: part, serif: phrases.includes(part) }));
 };
-const heroParts = mixedParts(heroHeadline, ['regulation, technology', 'public institutions.']);
-const aboutIntroParts = mixedParts(contentText(content, 'home.about.intro'), ['commercial lawyer', 'Frangos Law']);
-const aboutPracticeParts = mixedParts(contentText(content, 'home.about.practice'), ['cross-border commercial law', 'European regulation']);
-const aboutRoleParts = mixedParts(contentText(content, 'home.about.public_role'), ['Municipal Councillor', 'Deputy Mayor']);
+const heroParts = mixedParts(heroHeadline, ['regulation, technology and public institutions.']);
+const aboutIntroParts = mixedParts(contentText(content, 'home.about.intro'), ['commercial lawyer, Associate at Frangos Law']);
+const aboutPracticeParts = mixedParts(contentText(content, 'home.about.practice'), ['cross-border commercial law, European regulation and public institutions']);
+const aboutRoleParts = mixedParts(contentText(content, 'home.about.public_role'), ['Municipal Councillor for the Municipality of Galatsi and served as Deputy Mayor']);
 ---
 
 <Layout

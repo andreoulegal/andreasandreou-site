@@ -10,16 +10,6 @@ const expertiseCards = contentArray<{ number: string; title: string; body: strin
 const expertiseCategories = contentArray<string>(content, 'home.expertise.category_line');
 const serviceItems = contentArray<string>(content, 'home.services.items');
 const heroHeadline = contentText(content, 'home.hero.headline');
-type MixedPart = { text: string; serif: boolean };
-const mixedParts = (text: string, phrases: string[]): MixedPart[] => {
-  const escaped = phrases.map((phrase) => phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  const pattern = new RegExp(`(${escaped.join('|')})`, 'g');
-  return text.split(pattern).filter(Boolean).map((part) => ({ text: part, serif: phrases.includes(part) }));
-};
-const heroParts = mixedParts(heroHeadline, ['regulation, technology and public institutions.']);
-const aboutIntroParts = mixedParts(contentText(content, 'home.about.intro'), ['commercial lawyer, Associate at Frangos Law']);
-const aboutPracticeParts = mixedParts(contentText(content, 'home.about.practice'), ['cross-border commercial law, European regulation and public institutions']);
-const aboutRoleParts = mixedParts(contentText(content, 'home.about.public_role'), ['Municipal Councillor for the Municipality of Galatsi and served as Deputy Mayor']);
 ---
 
 <Layout
@@ -32,7 +22,7 @@ const aboutRoleParts = mixedParts(contentText(content, 'home.about.public_role')
         <img src="/assets/local-field.png" alt="" />
       </div>
       <div class="v16-hero-copy">
-        <h1>{heroParts.map((part) => part.serif ? <span class="mixed-serif">{part.text}</span> : part.text)}</h1>
+        <h1>{heroHeadline}</h1>
         <div class="v16-actions">
           <a class="v16-action" href={contentText(content, 'home.hero.explore_href')}>{contentText(content, 'home.hero.explore_label')} <span>↘</span></a>
         </div>
@@ -47,9 +37,9 @@ const aboutRoleParts = mixedParts(contentText(content, 'home.about.public_role')
         </figure>
         <div class="v16-about-copy">
           <p class="eyebrow">{contentText(content, 'home.about.eyebrow')}</p>
-          <p class="v16-about-intro">{aboutIntroParts.map((part) => part.serif ? <span class="mixed-serif">{part.text}</span> : part.text)}</p>
-          <p>{aboutPracticeParts.map((part) => part.serif ? <span class="mixed-serif">{part.text}</span> : part.text)}</p>
-          <p>{aboutRoleParts.map((part) => part.serif ? <span class="mixed-serif">{part.text}</span> : part.text)}</p>
+          <p class="v16-about-intro">{contentText(content, 'home.about.intro')}</p>
+          <p>{contentText(content, 'home.about.practice')}</p>
+          <p>{contentText(content, 'home.about.public_role')}</p>
           <a class="v16-button" href="/bio">{contentText(content, 'home.about.button_label')} <span>↗</span></a>
         </div>
       </div>

@@ -32,13 +32,13 @@ const defaults: SiteContentMap = {
   'home.about.image_alt': 'Andreas Andreou at the European Parliament',
   'home.about.image_caption': 'Andreas Andreou · European institutions',
   'home.expertise.eyebrow': 'Expertise',
-  'home.expertise.title': 'Turning regulation into strategic value',
-  'home.expertise.category_line': ['Business Regulation', 'Legal', 'Digital Transformation', 'Public Institutions'],
+  'home.expertise.title': 'Four ways of working across law, technology and public life.',
+  'home.expertise.category_line': ['Commercial Law', 'Digitalisation', 'Governance', 'Public Affairs'],
   'home.expertise.cards': [
-    { number: '01', title: 'Business Regulation', body: 'Turning regulatory requirements into informed business decisions and strategic advantage.' },
-    { number: '02', title: 'Legal', body: 'Practical legal guidance for complex, regulated and cross-border matters.' },
-    { number: '03', title: 'Digital Transformation', body: 'Connecting technology with the institutional realities that determine whether change works.' },
-    { number: '04', title: 'Public Institutions', body: 'Understanding how public bodies operate — and how businesses can work with them effectively.' }
+    { number: '01', title: 'Commercial Law', body: 'Commercial legal work across EU regulation, digital regulation, procurement, PPPs, IP, cross-border transactions and international private law.' },
+    { number: '02', title: 'Digitalisation', body: 'Helping businesses and public organisations introduce digital innovation with a clear view of constraints, partners and practical delivery.' },
+    { number: '03', title: 'Governance', body: 'Better governance for effective public institutions and credible organisations — from efficiency and trust to ESG and stakeholder capitalism.' },
+    { number: '04', title: 'Public Affairs', body: 'Digital communication, public engagement, partnerships and advocacy that help organisations explain their purpose and build trust.' }
   ],
   'home.procura.eyebrow': 'Procura',
   'home.procura.title': 'The platform for better public procurement',

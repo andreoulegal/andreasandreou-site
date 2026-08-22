@@ -51,8 +51,13 @@ const heroHeadline = contentText(content, 'home.hero.headline');
         <h2>{contentText(content, 'home.expertise.title')}</h2>
         <p class="v16-category-line">{expertiseCategories.map((category, index) => <>{index > 0 && <i></i>}{category}</>)}</p>
       </div>
-      <div class="v16-expertise-grid">
-        {expertiseCards.map((card) => <article><span>{card.number}</span><h3>{card.title}</h3><p>{card.body}</p></article>)}
+      <div class="v16-expertise-body">
+        <figure class="v16-expertise-visual">
+          <img src="/assets/expertise-digital-mark.png" alt="Abstract four-part mark representing the four areas of expertise" />
+        </figure>
+        <div class="v16-expertise-grid">
+          {expertiseCards.map((card) => <article><span>{card.number}</span><div><h3>{card.title}</h3><p>{card.body}</p></div></article>)}
+        </div>
       </div>
     </section>
 

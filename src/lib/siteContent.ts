@@ -11,11 +11,10 @@ export type NavigationItem = {
 
 export const defaultNavigation: NavigationItem[] = [
   { label: 'Bio', href: '/bio', display_order: 1, visible: true },
-  { label: 'Expertise', href: '/work', display_order: 2, visible: true },
+  { label: 'Work', href: '/#expertise', display_order: 2, visible: true },
   { label: 'Public Contribution', href: '/public-contribution', display_order: 3, visible: true },
-  { label: 'Services', href: '/#services', display_order: 4, visible: true },
-  { label: 'Procura', href: 'https://www.procura.gr/', display_order: 5, visible: true },
-  { label: 'Notes', href: '/#notes', display_order: 6, visible: true }
+  { label: 'Procura', href: 'https://www.procura.gr/', display_order: 4, visible: true },
+  { label: 'Notes', href: '/#notes', display_order: 5, visible: true }
 ];
 
 const defaults: SiteContentMap = {
@@ -31,7 +30,7 @@ const defaults: SiteContentMap = {
   'home.about.button_label': 'Read my full bio',
   'home.about.image_alt': 'Andreas Andreou at the European Parliament',
   'home.about.image_caption': 'Andreas Andreou · European institutions',
-  'home.expertise.eyebrow': 'Expertise',
+  'home.expertise.eyebrow': 'What I Do',
   'home.expertise.title': 'Four ways of working across law, technology and public life.',
   'home.expertise.category_line': ['Commercial Law', 'Digitalisation', 'Governance', 'Public Affairs'],
   'home.expertise.cards': [

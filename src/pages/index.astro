@@ -59,6 +59,12 @@ const heroHeadline = contentText(content, 'home.hero.headline');
           {expertiseCards.map((card) => <article><span>{card.number}</span><div><h3>{card.title}</h3><p>{card.body}</p></div></article>)}
         </div>
       </div>
+      <div class="v16-work-services">
+        <p class="eyebrow">{contentText(content, 'home.services.eyebrow')}</p>
+        <ul class="v16-services-list">
+          {serviceItems.map((item) => <li>{item} <span>↗</span></li>)}
+        </ul>
+      </div>
     </section>
 
     <section class="v16-procura" id="services">
@@ -74,18 +80,12 @@ const heroHeadline = contentText(content, 'home.hero.headline');
       </div>
     </section>
 
-    <section class="v16-split">
+    <section class="v16-split v16-public-contribution">
       <article id="public-contribution">
         <p class="eyebrow">{contentText(content, 'home.public_contribution.eyebrow')}</p>
         <h2>{contentText(content, 'home.public_contribution.title')}</h2>
         <p>{contentText(content, 'home.public_contribution.body')}</p>
         <a class="v16-action" href="/public-contribution">See my public contribution <span>↗</span></a>
-      </article>
-      <article>
-        <p class="eyebrow">{contentText(content, 'home.services.eyebrow')}</p>
-        <ul class="v16-services-list">
-          {serviceItems.map((item) => <li>{item} <span>↗</span></li>)}
-        </ul>
       </article>
     </section>
 
